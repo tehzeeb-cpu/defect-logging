@@ -1,0 +1,19 @@
+# Node / React
+node_modules/
+dist/
+.oxlintrc.json
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# OS / Environment
+.DS_Store
+.env
+.env.local
