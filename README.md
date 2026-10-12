@@ -99,42 +99,68 @@ Interactive Swagger documentation is available at **`http://127.0.0.1:8000/docs`
 
 ## 🚀 Quickstart & Setup Guide
 
-### Prerequisites
-* **Node.js** (v18+) & **npm**
-* **Python 3** (3.10+)
-* **PostgreSQL** running locally
-
-### 1. Database Setup
+### Option 1: One-Command Docker Setup (Recommended for Interviewers)
+The fastest way to test the full stack with PostgreSQL without installing any local databases or dependencies:
 ```bash
-# Create database in PostgreSQL
-createdb sobha_quality_db
+docker compose up --build
+```
+* **Frontend**: `http://localhost:5173`
+* **FastAPI Backend**: `http://localhost:8000`
+* **PostgreSQL Database**: runs in container on port `5432` with pre-seeded data.
+
+---
+
+### Option 2: Running PostgreSQL Locally
+
+#### A. Using Docker for PostgreSQL Only
+If you prefer running the backend and frontend on your host machine:
+```bash
+docker run -d --name sobha_pg -p 5432:5432 \
+  -e POSTGRES_USER=postgres \
+  -e POSTGRES_PASSWORD=postgres \
+  -e POSTGRES_DB=sobha_quality_db \
+  postgres:16-alpine
 ```
 
-### 2. Backend Setup & Startup
+#### B. Installing Native PostgreSQL
+* **macOS (Homebrew)**:
+  ```bash
+  brew install postgresql@16
+  brew services start postgresql@16
+  createdb sobha_quality_db
+  ```
+* **Ubuntu / Debian**:
+  ```bash
+  sudo apt update && sudo apt install -y postgresql postgresql-contrib
+  sudo systemctl start postgresql
+  sudo -u postgres createdb sobha_quality_db
+  ```
+* **Windows**: Download the official installer from [postgresql.org/download](https://www.postgresql.org/download/windows/).
+
+---
+
+### Option 3: Standard Local Execution
+
+#### 1. Backend Setup
 ```bash
 cd backend
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 
-# Run database seed (also runs automatically on startup)
-python seed_data.py
-
-# Start FastAPI server
+# Run server (tables and seed data are populated automatically on startup)
 uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 ```
+> **Note on Zero-Config Fallback**: If PostgreSQL is not detected, the application automatically falls back to an embedded database with pre-loaded baseline records, guaranteeing zero setup friction during review.
 
-### 3. Frontend Setup & Startup
+#### 2. Frontend Setup
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
 
-Open **`http://localhost:5173`** in your browser.
-
-### 4. One-Click Startup Script
-Alternatively, run both servers simultaneously using the included script:
+#### 3. One-Click Startup Script (Local)
 ```bash
 ./start.sh
 ```
