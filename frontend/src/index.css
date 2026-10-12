@@ -235,90 +235,17 @@ button, input, select, textarea {
   box-shadow: 0 0 6px rgba(197, 160, 89, 0.6);
 }
 
-/* Bottom Module Switcher */
-.sidebar-bottom-switch {
-  margin-top: auto;
-  padding: 20px 16px;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.module-switch-title {
-  font-size: 10px;
-  letter-spacing: 1px;
-  font-weight: 700;
-  color: #6C7078;
-  margin-bottom: 8px;
-  text-transform: uppercase;
-}
-
-.module-pills {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.module-pills .pill-btn {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: #9EA2AB;
-  font-size: 11.5px;
-  padding: 6px 10px;
-  border-radius: 6px;
-  cursor: pointer;
-  text-align: left;
-  transition: all 0.15s;
-}
-
-.module-pills .pill-btn:hover {
-  background: rgba(255, 255, 255, 0.08);
+/* Active Menu Item for Dark Theme */
+.nav-item-sobha.active-menu-item {
+  background-color: rgba(255, 255, 255, 0.08);
   color: #FFFFFF;
-}
-
-.module-pills .pill-btn.active {
-  background: rgba(186, 150, 102, 0.15);
-  border-color: #BA9666;
-  color: #E2C48D;
-  font-weight: 600;
-}
-
-/* Light Theme Sidebar (Image 5) */
-.nav-item-light {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 14px;
-  border-radius: 10px;
-  color: #475569;
-  font-size: 13.5px;
-  font-weight: 500;
-  cursor: pointer;
-  border: none;
-  background: transparent;
-  width: 100%;
-  text-align: left;
-  transition: all 0.15s;
-}
-
-.nav-item-light:hover {
-  background-color: #F1F5F9;
-  color: #0F172A;
-}
-
-.nav-item-light.active-black {
-  background-color: #0F172A;
-  color: #FFFFFF;
-}
-
-.nav-item-light.active-light-item {
-  background-color: #F1F5F9;
-  color: #0F172A;
   font-weight: 600;
 }
 
 .nav-badge-white {
   margin-left: auto;
-  background-color: #FFFFFF;
-  color: #0F172A;
+  background-color: #E2E4E8;
+  color: #111827;
   font-size: 11px;
   font-weight: 700;
   padding: 2px 7px;

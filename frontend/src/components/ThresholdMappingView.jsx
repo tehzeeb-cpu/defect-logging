@@ -196,7 +196,7 @@ export default function ThresholdMappingView({ filterOptions, showToast }) {
         </div>
       </div>
 
-      {/* Filter Bar matching Image 4 */}
+      {/* Filter Bar */}
       <div className="filter-bar">
         <select 
           className="filter-select"
@@ -388,7 +388,7 @@ export default function ThresholdMappingView({ filterOptions, showToast }) {
         </table>
       </div>
 
-      {/* Bottom Action Button: Set All > (matching Image 4) */}
+      {/* Batch Persistence Action */}
       <div className="bottom-actions">
         <button 
           type="button" 

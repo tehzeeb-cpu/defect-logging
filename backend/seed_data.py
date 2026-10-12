@@ -48,7 +48,7 @@ def seed():
             db.commit()
             sub_divisions[s_name] = s_obj
 
-    # 3. Activities & Sub-Activities (matching Image 5: Site Preparation, Foundation Construction, Framing, Enclosure, etc.)
+    # 3. Construction Activities & Sub-Activities Hierarchy
     act_data = [
         {
             "name": "Site Preparation",
@@ -120,7 +120,7 @@ def seed():
             db.add(sub_obj)
         db.commit()
 
-    # 4. Defect Threshold Mapping (matching Image 4 exactly!)
+    # 4. Defect Threshold Sensitivity Mappings
     threshold_data = [
         {"defect_type": "UCM Leak", "defect_threshold": 60, "sporadic_threshold": 5, "chronic_threshold": 20, "severity_index": 4, "control_index": 8},
         {"defect_type": "Glass Bend", "defect_threshold": 70, "sporadic_threshold": 3, "chronic_threshold": 15, "severity_index": 6, "control_index": 3},
@@ -144,7 +144,7 @@ def seed():
         db.add(t_obj)
     db.commit()
 
-    # 5. Defect Report Logs (matching Image 1 Defect Report exactly!)
+    # 5. Quality Audit Incident Records & Yearly Counts
     report_data = [
         {
             "sou": "SOU 3",

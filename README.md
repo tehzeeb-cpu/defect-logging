@@ -16,20 +16,20 @@ The **SOBHA Quality & Defect Management System** is a full-stack enterprise web 
 
 The application replicates the Sobha design system with high fidelity:
 
-### 1. All Activities View (`Image 5 Activity.png`)
-*Expandable accordion with parent activities and nested sub-activity inspection cards, live search, and date filters.*
+### 1. Construction Activities & Inspection Requests
+*Expandable hierarchical accordion with parent activities and nested sub-activity inspection cards, real-time search, and date filters.*
 ![All Activities View](./screenshots/1_All_Activities_View.png)
 
-### 2. Add Activity Modal Dialog
-*Interactive modal for registering new construction activities and sub-activities.*
+### 2. Activity Creation Dialog
+*Modal workflow for registering new construction activities and sub-activities.*
 ![Add Activity Modal](./screenshots/4_Add_Activity_Modal.png)
 
-### 3. Defect Threshold Mapping (`Image 4 defect threshold mapping.png`)
-*Configurable threshold table with defect thresholds, sporadic thresholds, chronic thresholds, severity & control indices, and bulk "Set All" persistence.*
+### 3. Defect Threshold Sensitivity Configuration
+*Configurable threshold table with defect thresholds, sporadic thresholds, chronic thresholds, severity & control indices, and bulk database persistence.*
 ![Defect Threshold Mapping](./screenshots/2_Defect_Threshold_Mapping_View.png)
 
-### 4. Defects Report (`Defect report.png`)
-*Multi-level audit report across SOUs, projects, divisions, activities, and defect types with live filtering and CSV export.*
+### 4. Quality Audit & Defects Report
+*Multi-dimensional audit report across SOUs, projects, divisions, activities, and defect types with live filtering and CSV export.*
 ![Defects Report](./screenshots/3_Defects_Report_View.png)
 
 ---

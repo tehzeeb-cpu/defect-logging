@@ -17,7 +17,7 @@ export default function ActivitiesView({ filterOptions, showToast }) {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [selectedParent, setSelectedParent] = useState('All');
-  const [expandedId, setExpandedId] = useState(1); // Default Site Preparation expanded as in Image 5
+  const [expandedId, setExpandedId] = useState(1); // Default expanded primary activity
 
   // Modals state
   const [showAddModal, setShowAddModal] = useState(false);

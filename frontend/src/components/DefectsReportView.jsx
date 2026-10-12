@@ -93,7 +93,7 @@ export default function DefectsReportView({ filterOptions, showToast }) {
         </div>
       </div>
 
-      {/* Filter Bar matching Defect report.png */}
+      {/* Filter Bar */}
       <div className="filter-bar">
         <span className="filter-label">Filter By</span>
 

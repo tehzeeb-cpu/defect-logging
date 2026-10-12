@@ -63,7 +63,7 @@ def get_filter_options(db: Session = Depends(get_db)):
     }
 
 # ==========================================
-# 1. Activities & Sub-Activities (Image 5)
+# 1. Activities & Inspection Requests API
 # ==========================================
 @app.get("/api/activities", response_model=List[schemas.ActivityResponse])
 def get_activities(
@@ -210,7 +210,7 @@ def delete_sub_activity(sub_id: int, db: Session = Depends(get_db)):
     return {"message": "Sub-activity deleted successfully"}
 
 # ==========================================
-# 2. Defect Threshold Mapping (Image 4)
+# 2. Defect Threshold Sensitivity API
 # ==========================================
 @app.get("/api/threshold-mappings", response_model=List[schemas.DefectThresholdResponse])
 def get_threshold_mappings(
@@ -284,7 +284,7 @@ def bulk_update_thresholds(bulk_data: schemas.DefectThresholdBulkUpdate, db: Ses
     return {"message": f"Successfully updated {updated_count} defect threshold records"}
 
 # ==========================================
-# 3. Defects Report (Defect report.png)
+# 3. Quality Audit & Defect Reports API
 # ==========================================
 @app.get("/api/defects-report", response_model=List[schemas.DefectReportLogResponse])
 def get_defects_report(

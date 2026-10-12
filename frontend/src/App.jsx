@@ -16,7 +16,6 @@ export default function App() {
   };
 
   const [currentView, setCurrentView] = useState(getInitialView);
-  const [sidebarTheme, setSidebarTheme] = useState('sobha-dark');
   const [filterOptions, setFilterOptions] = useState({
     projects: [],
     divisions: [],
@@ -55,12 +54,10 @@ export default function App() {
 
   return (
     <div className="app-container">
-      {/* Sobha Luxury Dark Sidebar */}
+      {/* Enterprise Sobha Dark Sidebar */}
       <Sidebar 
         currentView={currentView} 
         setCurrentView={setCurrentView} 
-        sidebarTheme={sidebarTheme}
-        setSidebarTheme={setSidebarTheme}
       />
 
       {/* Main Content Area */}
