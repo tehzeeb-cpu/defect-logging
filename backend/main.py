@@ -260,7 +260,29 @@ def get_threshold_mappings(
 
 @app.post("/api/threshold-mappings", response_model=schemas.DefectThresholdResponse)
 def create_threshold_mapping(item: schemas.DefectThresholdCreate, db: Session = Depends(get_db)):
-    obj = DefectThresholdMapping(**item.dict())
+    data = item.dict()
+    if data.get("project_name") and not data.get("project_id"):
+        proj = db.query(Project).filter(Project.name == data["project_name"]).first()
+        if proj:
+            data["project_id"] = proj.id
+    if data.get("division_name") and not data.get("division_id"):
+        div = db.query(Division).filter(Division.name == data["division_name"]).first()
+        if div:
+            data["division_id"] = div.id
+    if data.get("sub_division_name") and not data.get("sub_division_id"):
+        sdiv = db.query(SubDivision).filter(SubDivision.name == data["sub_division_name"]).first()
+        if sdiv:
+            data["sub_division_id"] = sdiv.id
+    if data.get("activity_name") and not data.get("activity_id"):
+        act = db.query(Activity).filter(Activity.name == data["activity_name"]).first()
+        if act:
+            data["activity_id"] = act.id
+    if data.get("sub_activity_name") and not data.get("sub_activity_id"):
+        sact = db.query(SubActivity).filter(SubActivity.name == data["sub_activity_name"]).first()
+        if sact:
+            data["sub_activity_id"] = sact.id
+
+    obj = DefectThresholdMapping(**data)
     db.add(obj)
     db.commit()
     db.refresh(obj)
@@ -272,7 +294,29 @@ def update_threshold_mapping(mapping_id: int, item: schemas.DefectThresholdUpdat
     if not obj:
         raise HTTPException(status_code=404, detail="Threshold mapping not found")
 
-    for field, value in item.dict(exclude_unset=True).items():
+    data = item.dict(exclude_unset=True)
+    if data.get("project_name") and not data.get("project_id"):
+        proj = db.query(Project).filter(Project.name == data["project_name"]).first()
+        if proj:
+            data["project_id"] = proj.id
+    if data.get("division_name") and not data.get("division_id"):
+        div = db.query(Division).filter(Division.name == data["division_name"]).first()
+        if div:
+            data["division_id"] = div.id
+    if data.get("sub_division_name") and not data.get("sub_division_id"):
+        sdiv = db.query(SubDivision).filter(SubDivision.name == data["sub_division_name"]).first()
+        if sdiv:
+            data["sub_division_id"] = sdiv.id
+    if data.get("activity_name") and not data.get("activity_id"):
+        act = db.query(Activity).filter(Activity.name == data["activity_name"]).first()
+        if act:
+            data["activity_id"] = act.id
+    if data.get("sub_activity_name") and not data.get("sub_activity_id"):
+        sact = db.query(SubActivity).filter(SubActivity.name == data["sub_activity_name"]).first()
+        if sact:
+            data["sub_activity_id"] = sact.id
+
+    for field, value in data.items():
         setattr(obj, field, value)
 
     db.commit()

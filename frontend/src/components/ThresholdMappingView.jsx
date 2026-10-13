@@ -37,7 +37,9 @@ export default function ThresholdMappingView({ filterOptions, showToast }) {
     control_index: 5,
     project_name: 'Sobha Reserve',
     division_name: 'Finishing Division',
-    activity_name: 'Dry Area Floor'
+    sub_division_name: 'Tile Division',
+    activity_name: 'Dry Area Floor',
+    sub_activity_name: 'Floor Tiling'
   });
 
   const [editModal, setEditModal] = useState(null);
@@ -170,7 +172,12 @@ export default function ThresholdMappingView({ filterOptions, showToast }) {
           sporadic_threshold: 5,
           chronic_threshold: 15,
           severity_index: 5,
-          control_index: 5
+          control_index: 5,
+          project_name: 'Sobha Reserve',
+          division_name: 'Finishing Division',
+          sub_division_name: 'Tile Division',
+          activity_name: 'Dry Area Floor',
+          sub_activity_name: 'Floor Tiling'
         });
         fetchMappings();
       }
@@ -489,6 +496,43 @@ export default function ThresholdMappingView({ filterOptions, showToast }) {
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                 <div className="form-group">
+                  <label className="form-label">Sub-Division Scope</label>
+                  <select 
+                    className="form-input"
+                    value={newDefect.sub_division_name || ''}
+                    onChange={e => setNewDefect({...newDefect, sub_division_name: e.target.value})}
+                  >
+                    <option value="">Select Sub-Division</option>
+                    {filterOptions.sub_divisions?.map(sd => <option key={sd} value={sd}>{sd}</option>)}
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Activity Scope</label>
+                  <select 
+                    className="form-input"
+                    value={newDefect.activity_name || ''}
+                    onChange={e => setNewDefect({...newDefect, activity_name: e.target.value})}
+                  >
+                    <option value="">Select Activity</option>
+                    {filterOptions.activities?.map(a => <option key={a} value={a}>{a}</option>)}
+                  </select>
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Sub-Activity Scope</label>
+                <select 
+                  className="form-input"
+                  value={newDefect.sub_activity_name || ''}
+                  onChange={e => setNewDefect({...newDefect, sub_activity_name: e.target.value})}
+                >
+                  <option value="">Select Sub-Activity</option>
+                  {filterOptions.sub_activities?.map(sa => <option key={sa} value={sa}>{sa}</option>)}
+                </select>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                <div className="form-group">
                   <label className="form-label">Defect Threshold</label>
                   <input 
                     type="number" 
@@ -599,6 +643,43 @@ export default function ThresholdMappingView({ filterOptions, showToast }) {
                     {filterOptions.divisions?.map(d => <option key={d} value={d}>{d}</option>)}
                   </select>
                 </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                <div className="form-group">
+                  <label className="form-label">Sub-Division Scope</label>
+                  <select 
+                    className="form-input"
+                    value={editModal.sub_division_name || ''}
+                    onChange={e => setEditModal({...editModal, sub_division_name: e.target.value})}
+                  >
+                    <option value="">Select Sub-Division</option>
+                    {filterOptions.sub_divisions?.map(sd => <option key={sd} value={sd}>{sd}</option>)}
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Activity Scope</label>
+                  <select 
+                    className="form-input"
+                    value={editModal.activity_name || ''}
+                    onChange={e => setEditModal({...editModal, activity_name: e.target.value})}
+                  >
+                    <option value="">Select Activity</option>
+                    {filterOptions.activities?.map(a => <option key={a} value={a}>{a}</option>)}
+                  </select>
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Sub-Activity Scope</label>
+                <select 
+                  className="form-input"
+                  value={editModal.sub_activity_name || ''}
+                  onChange={e => setEditModal({...editModal, sub_activity_name: e.target.value})}
+                >
+                  <option value="">Select Sub-Activity</option>
+                  {filterOptions.sub_activities?.map(sa => <option key={sa} value={sa}>{sa}</option>)}
+                </select>
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
