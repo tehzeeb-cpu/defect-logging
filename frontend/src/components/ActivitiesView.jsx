@@ -12,7 +12,7 @@ import {
   Check
 } from 'lucide-react';
 
-export default function ActivitiesView({ filterOptions, showToast }) {
+export default function ActivitiesView({ filterOptions, showToast, refreshFilterOptions }) {
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -29,8 +29,24 @@ export default function ActivitiesView({ filterOptions, showToast }) {
     sub_count: 10
   });
 
+  // Modal to add a sub-activity to an existing parent activity
+  const [addSubModal, setAddSubModal] = useState(null);
+  const [newSubActivity, setNewSubActivity] = useState({
+    name: '',
+    description: '',
+    inspection_request_count: 10
+  });
+
   const [editSubModal, setEditSubModal] = useState(null);
   const [viewSubModal, setViewSubModal] = useState(null);
+
+  // Dynamically compute parent activity filter options including all created activities
+  const parentActivityOptions = Array.from(
+    new Set([
+      ...(activities.map(act => act.name) || []),
+      ...(filterOptions.activities || [])
+    ])
+  ).filter(Boolean);
 
   const fetchActivities = async () => {
     try {
@@ -87,10 +103,56 @@ export default function ActivitiesView({ filterOptions, showToast }) {
         setShowAddModal(false);
         setNewActivity({ name: '', description: '', sub_name: '', sub_description: '', sub_count: 10 });
         fetchActivities();
+        if (refreshFilterOptions) refreshFilterOptions();
       }
     } catch (err) {
       console.error(err);
       showToast('Error creating activity');
+    }
+  };
+
+  const handleAddSubActivitySubmit = async (e) => {
+    e.preventDefault();
+    if (!addSubModal || !newSubActivity.name.trim()) return;
+
+    try {
+      const res = await fetch(`/api/activities/${addSubModal.activity_id}/sub-activities`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: newSubActivity.name.trim(),
+          description: newSubActivity.description || 'Operational Sub-Activity Specification',
+          inspection_request_count: Number(newSubActivity.inspection_request_count) || 0
+        })
+      });
+
+      if (res.ok) {
+        showToast(`Sub-activity added to ${addSubModal.activity_name}!`);
+        setAddSubModal(null);
+        setNewSubActivity({ name: '', description: '', inspection_request_count: 10 });
+        fetchActivities();
+        if (refreshFilterOptions) refreshFilterOptions();
+      } else {
+        showToast('Failed to add sub-activity');
+      }
+    } catch (err) {
+      console.error(err);
+      showToast('Error adding sub-activity');
+    }
+  };
+
+  const handleDeleteActivity = async (activityId, activityName) => {
+    if (!window.confirm(`Delete activity "${activityName}" and all its sub-activities?`)) return;
+    try {
+      const res = await fetch(`/api/activities/${activityId}`, { method: 'DELETE' });
+      if (res.ok) {
+        showToast(`Activity "${activityName}" deleted`);
+        fetchActivities();
+        if (refreshFilterOptions) refreshFilterOptions();
+      }
+    } catch (err) {
+      console.error(err);
+      showToast('Error deleting activity');
     }
   };
 
@@ -113,6 +175,7 @@ export default function ActivitiesView({ filterOptions, showToast }) {
         showToast('Sub-activity updated successfully!');
         setEditSubModal(null);
         fetchActivities();
+        if (refreshFilterOptions) refreshFilterOptions();
       }
     } catch (err) {
       console.error(err);
@@ -127,6 +190,7 @@ export default function ActivitiesView({ filterOptions, showToast }) {
       if (res.ok) {
         showToast('Sub-activity deleted');
         fetchActivities();
+        if (refreshFilterOptions) refreshFilterOptions();
       }
     } catch (err) {
       console.error(err);
@@ -185,7 +249,7 @@ export default function ActivitiesView({ filterOptions, showToast }) {
           onChange={(e) => setSelectedParent(e.target.value)}
         >
           <option value="All">Parent Activity</option>
-          {filterOptions.activities?.map(act => (
+          {parentActivityOptions.map(act => (
             <option key={act} value={act}>{act}</option>
           ))}
         </select>
@@ -224,6 +288,10 @@ export default function ActivitiesView({ filterOptions, showToast }) {
             ) : (
               activities.map(act => {
                 const isExpanded = expandedId === act.id;
+                const subCount = typeof act.sub_activities_count === 'number' 
+                  ? act.sub_activities_count 
+                  : (act.sub_activities?.length ?? 0);
+
                 return (
                   <React.Fragment key={act.id}>
                     <tr 
@@ -233,22 +301,35 @@ export default function ActivitiesView({ filterOptions, showToast }) {
                       <td style={{ fontWeight: '600', color: '#111827' }}>{act.name}</td>
                       <td style={{ color: '#4B5563' }}>{act.description}</td>
                       <td style={{ fontWeight: '600' }}>
-                        {act.sub_activities_count || (act.name === 'Site Preparation' ? 14 : 14)}
+                        {subCount}
                       </td>
                       <td style={{ color: '#374151', fontSize: '13px' }}>
                         {formatDate(act.created_at)}
                       </td>
                       <td style={{ textAlign: 'center' }}>
-                        <button 
-                          type="button" 
-                          className="icon-btn" 
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            toggleExpand(act.id);
-                          }}
-                        >
-                          {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-                        </button>
+                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                          <button 
+                            type="button" 
+                            className="icon-btn delete" 
+                            title={`Delete ${act.name}`}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteActivity(act.id, act.name);
+                            }}
+                          >
+                            <Trash2 size={15} />
+                          </button>
+                          <button 
+                            type="button" 
+                            className="icon-btn" 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleExpand(act.id);
+                            }}
+                          >
+                            {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                          </button>
+                        </div>
                       </td>
                     </tr>
 
@@ -257,6 +338,36 @@ export default function ActivitiesView({ filterOptions, showToast }) {
                       <tr>
                         <td colSpan="5" style={{ padding: '0 8px 16px 8px', backgroundColor: '#FAFAFC' }}>
                           <div className="nested-sub-card">
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', padding: '4px 6px 0 6px' }}>
+                              <span style={{ fontSize: '13px', fontWeight: '600', color: '#374151' }}>
+                                Operational Sub-Activities ({act.sub_activities?.length ?? 0})
+                              </span>
+                              <button
+                                type="button"
+                                style={{
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '6px',
+                                  padding: '5px 12px',
+                                  fontSize: '12px',
+                                  fontWeight: '600',
+                                  borderRadius: '6px',
+                                  border: '1px solid #D1D5DB',
+                                  background: '#FFFFFF',
+                                  color: '#111827',
+                                  cursor: 'pointer',
+                                  boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
+                                }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setAddSubModal({ activity_id: act.id, activity_name: act.name });
+                                  setNewSubActivity({ name: '', description: '', inspection_request_count: 10 });
+                                }}
+                              >
+                                <Plus size={14} />
+                                <span>Add Sub-Activity</span>
+                              </button>
+                            </div>
                             <table className="nested-table">
                               <thead>
                                 <tr>
@@ -488,6 +599,64 @@ export default function ActivitiesView({ filterOptions, showToast }) {
                 Close
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add Sub-Activity to Existing Parent Activity Modal */}
+      {addSubModal && (
+        <div className="modal-overlay" onClick={() => setAddSubModal(null)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3 className="modal-title">Add Sub-Activity to "{addSubModal.activity_name}"</h3>
+              <button type="button" className="icon-btn" onClick={() => setAddSubModal(null)}>
+                <X size={18} />
+              </button>
+            </div>
+            <form onSubmit={handleAddSubActivitySubmit}>
+              <div className="form-group">
+                <label className="form-label">Sub-Activity Name *</label>
+                <input 
+                  type="text" 
+                  className="form-input" 
+                  placeholder="e.g. Surface Primer or Joint Sealant"
+                  required
+                  value={newSubActivity.name}
+                  onChange={e => setNewSubActivity({...newSubActivity, name: e.target.value})}
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Description</label>
+                <textarea 
+                  className="form-textarea" 
+                  rows="3"
+                  placeholder="Operational details and inspection requirements..."
+                  value={newSubActivity.description}
+                  onChange={e => setNewSubActivity({...newSubActivity, description: e.target.value})}
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Initial Inspection Request Count</label>
+                <input 
+                  type="number" 
+                  min="0"
+                  className="form-input" 
+                  value={newSubActivity.inspection_request_count}
+                  onChange={e => setNewSubActivity({...newSubActivity, inspection_request_count: Number(e.target.value)})}
+                />
+              </div>
+
+              <div className="modal-actions">
+                <button type="button" className="btn-secondary" onClick={() => setAddSubModal(null)}>
+                  Cancel
+                </button>
+                <button type="submit" className="btn-black">
+                  Save Sub-Activity
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

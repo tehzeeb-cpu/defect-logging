@@ -37,18 +37,19 @@ export default function App() {
     }, 3500);
   };
 
-  useEffect(() => {
-    const fetchOptions = async () => {
-      try {
-        const res = await fetch('/api/filter-options');
-        if (res.ok) {
-          const data = await res.json();
-          setFilterOptions(data);
-        }
-      } catch (err) {
-        console.error('Error fetching global filter options:', err);
+  const fetchOptions = async () => {
+    try {
+      const res = await fetch('/api/filter-options');
+      if (res.ok) {
+        const data = await res.json();
+        setFilterOptions(data);
       }
-    };
+    } catch (err) {
+      console.error('Error fetching global filter options:', err);
+    }
+  };
+
+  useEffect(() => {
     fetchOptions();
   }, []);
 
@@ -66,6 +67,7 @@ export default function App() {
           <ActivitiesView 
             filterOptions={filterOptions} 
             showToast={showToast} 
+            refreshFilterOptions={fetchOptions}
           />
         )}
 
@@ -73,6 +75,7 @@ export default function App() {
           <ThresholdMappingView 
             filterOptions={filterOptions} 
             showToast={showToast} 
+            refreshFilterOptions={fetchOptions}
           />
         )}
 
