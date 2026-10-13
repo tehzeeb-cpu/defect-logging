@@ -58,6 +58,11 @@ class DefectThresholdBase(BaseModel):
     sub_division_id: Optional[int] = None
     activity_id: Optional[int] = None
     sub_activity_id: Optional[int] = None
+    project_name: Optional[str] = None
+    division_name: Optional[str] = None
+    sub_division_name: Optional[str] = None
+    activity_name: Optional[str] = None
+    sub_activity_name: Optional[str] = None
 
 class DefectThresholdCreate(DefectThresholdBase):
     pass
@@ -74,6 +79,11 @@ class DefectThresholdUpdate(BaseModel):
     sub_division_id: Optional[int] = None
     activity_id: Optional[int] = None
     sub_activity_id: Optional[int] = None
+    project_name: Optional[str] = None
+    division_name: Optional[str] = None
+    sub_division_name: Optional[str] = None
+    activity_name: Optional[str] = None
+    sub_activity_name: Optional[str] = None
 
 class DefectThresholdResponse(DefectThresholdBase):
     id: int

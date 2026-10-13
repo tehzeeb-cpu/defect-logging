@@ -218,6 +218,11 @@ def get_threshold_mappings(
     severity: Optional[int] = Query(None),
     control: Optional[int] = Query(None),
     defect_type: Optional[str] = Query(None),
+    project: Optional[str] = Query(None),
+    division: Optional[str] = Query(None),
+    sub_division: Optional[str] = Query(None),
+    activity: Optional[str] = Query(None),
+    sub_activity: Optional[str] = Query(None),
     db: Session = Depends(get_db)
 ):
     query = db.query(DefectThresholdMapping)
@@ -232,8 +237,23 @@ def get_threshold_mappings(
     if control:
         query = query.filter(DefectThresholdMapping.control_index == control)
 
-    if defect_type and defect_type != "All":
+    if defect_type and defect_type not in ["All", "Defect Type"]:
         query = query.filter(DefectThresholdMapping.defect_type == defect_type)
+
+    if project and project not in ["All", "Project"]:
+        query = query.filter(DefectThresholdMapping.project_name == project)
+
+    if division and division not in ["All", "Division"]:
+        query = query.filter(DefectThresholdMapping.division_name == division)
+
+    if sub_division and sub_division not in ["All", "Sub-Division"]:
+        query = query.filter(DefectThresholdMapping.sub_division_name == sub_division)
+
+    if activity and activity not in ["All", "Activity"]:
+        query = query.filter(DefectThresholdMapping.activity_name == activity)
+
+    if sub_activity and sub_activity not in ["All", "Sub-Activity"]:
+        query = query.filter(DefectThresholdMapping.sub_activity_name == sub_activity)
 
     results = query.order_by(DefectThresholdMapping.id.asc()).all()
     return [schemas.DefectThresholdResponse.from_orm(r) for r in results]

@@ -59,12 +59,18 @@ class DefectThresholdMapping(Base):
     severity_index = Column(Integer, nullable=False, default=5) # 1 to 10
     control_index = Column(Integer, nullable=False, default=5)  # 1 to 10
 
-    # Optional relational mapping filters
+    # Relational mapping and descriptive filters
     project_id = Column(Integer, ForeignKey("projects.id", ondelete="SET NULL"), nullable=True)
     division_id = Column(Integer, ForeignKey("divisions.id", ondelete="SET NULL"), nullable=True)
     sub_division_id = Column(Integer, ForeignKey("sub_divisions.id", ondelete="SET NULL"), nullable=True)
     activity_id = Column(Integer, ForeignKey("activities.id", ondelete="SET NULL"), nullable=True)
     sub_activity_id = Column(Integer, ForeignKey("sub_activities.id", ondelete="SET NULL"), nullable=True)
+
+    project_name = Column(String(255), nullable=True, default="Sobha Reserve")
+    division_name = Column(String(255), nullable=True)
+    sub_division_name = Column(String(255), nullable=True)
+    activity_name = Column(String(255), nullable=True)
+    sub_activity_name = Column(String(255), nullable=True)
 
 class DefectReportLog(Base):
     __tablename__ = "defect_report_logs"

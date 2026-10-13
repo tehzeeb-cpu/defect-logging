@@ -2,15 +2,263 @@ from database import SessionLocal, Base, engine
 from models import Project, Division, SubDivision, Activity, SubActivity, DefectThresholdMapping, DefectReportLog
 from datetime import datetime
 
+from sqlalchemy import text
+
+def seed_threshold_mappings(db):
+    threshold_data = [
+        # Sobha Reserve (Wireframe Image 4 dataset)
+        {
+            "defect_type": "UCM Leak",
+            "defect_threshold": 60,
+            "sporadic_threshold": 5,
+            "chronic_threshold": 20,
+            "severity_index": 4,
+            "control_index": 8,
+            "project_name": "Sobha Reserve",
+            "division_name": "Structural Division",
+            "sub_division_name": "Waterproofing",
+            "activity_name": "Enclosure",
+            "sub_activity_name": "Structural Silicone Weatherproofing"
+        },
+        {
+            "defect_type": "Glass Bend",
+            "defect_threshold": 70,
+            "sporadic_threshold": 3,
+            "chronic_threshold": 15,
+            "severity_index": 6,
+            "control_index": 3,
+            "project_name": "Sobha Reserve",
+            "division_name": "Finishing Division",
+            "sub_division_name": "Carpentry",
+            "activity_name": "Enclosure",
+            "sub_activity_name": "Double Glazed Unit Fitting"
+        },
+        {
+            "defect_type": "Wire not connected",
+            "defect_threshold": 100,
+            "sporadic_threshold": 5,
+            "chronic_threshold": 10,
+            "severity_index": 8,
+            "control_index": 8,
+            "project_name": "Sobha Reserve",
+            "division_name": "MEP Division",
+            "sub_division_name": "Electrical",
+            "activity_name": "GI Box Fixing",
+            "sub_activity_name": "Conduit Termination"
+        },
+        {
+            "defect_type": "FCD connection issue",
+            "defect_threshold": 200,
+            "sporadic_threshold": 5,
+            "chronic_threshold": 5,
+            "severity_index": 5,
+            "control_index": 4,
+            "project_name": "Sobha Reserve",
+            "division_name": "MEP Division",
+            "sub_division_name": "HVAC",
+            "activity_name": "GI Box Fixing",
+            "sub_activity_name": "GI Box Fixing"
+        },
+        {
+            "defect_type": "Access not provided for FCU",
+            "defect_threshold": 50,
+            "sporadic_threshold": 8,
+            "chronic_threshold": 55,
+            "severity_index": 4,
+            "control_index": 8,
+            "project_name": "Sobha Reserve",
+            "division_name": "MEP Division",
+            "sub_division_name": "HVAC",
+            "activity_name": "GI Box Fixing",
+            "sub_activity_name": "GI Box Fixing"
+        },
+        {
+            "defect_type": "Screw missing",
+            "defect_threshold": 30,
+            "sporadic_threshold": 2,
+            "chronic_threshold": 32,
+            "severity_index": 2,
+            "control_index": 1,
+            "project_name": "Sobha Reserve",
+            "division_name": "Finishing Division",
+            "sub_division_name": "False Ceiling",
+            "activity_name": "Dry Area Floor",
+            "sub_activity_name": "MS Bracket Fixing"
+        },
+        {
+            "defect_type": "Tile hollow sound",
+            "defect_threshold": 80,
+            "sporadic_threshold": 6,
+            "chronic_threshold": 25,
+            "severity_index": 5,
+            "control_index": 7,
+            "project_name": "Sobha Reserve",
+            "division_name": "Finishing Division",
+            "sub_division_name": "Tile Division",
+            "activity_name": "Dry Area Floor",
+            "sub_activity_name": "Floor Tiling"
+        },
+        {
+            "defect_type": "Paint peeling & blister",
+            "defect_threshold": 90,
+            "sporadic_threshold": 7,
+            "chronic_threshold": 30,
+            "severity_index": 3,
+            "control_index": 6,
+            "project_name": "Sobha Reserve",
+            "division_name": "Finishing Division",
+            "sub_division_name": "Paint",
+            "activity_name": "Dry Area Floor",
+            "sub_activity_name": "Ceiling First coat"
+        },
+        # Sobha Seahaven
+        {
+            "defect_type": "Honeycombing in Concrete",
+            "defect_threshold": 40,
+            "sporadic_threshold": 2,
+            "chronic_threshold": 10,
+            "severity_index": 7,
+            "control_index": 4,
+            "project_name": "Sobha Seahaven",
+            "division_name": "Structural Division",
+            "sub_division_name": "Concrete & Formwork",
+            "activity_name": "Framing",
+            "sub_activity_name": "Column Shuttering"
+        },
+        {
+            "defect_type": "Rebar Cover Inadequate",
+            "defect_threshold": 45,
+            "sporadic_threshold": 3,
+            "chronic_threshold": 12,
+            "severity_index": 8,
+            "control_index": 5,
+            "project_name": "Sobha Seahaven",
+            "division_name": "Structural Division",
+            "sub_division_name": "Steel Framing",
+            "activity_name": "Framing",
+            "sub_activity_name": "Shear Wall Reinforcement"
+        },
+        {
+            "defect_type": "Screed Level Discrepancy",
+            "defect_threshold": 65,
+            "sporadic_threshold": 4,
+            "chronic_threshold": 18,
+            "severity_index": 4,
+            "control_index": 6,
+            "project_name": "Sobha Seahaven",
+            "division_name": "Finishing Division",
+            "sub_division_name": "Tile Division",
+            "activity_name": "Dry Area Floor",
+            "sub_activity_name": "Floor Tiling"
+        },
+        # The Crest
+        {
+            "defect_type": "Conduit Choking",
+            "defect_threshold": 55,
+            "sporadic_threshold": 3,
+            "chronic_threshold": 15,
+            "severity_index": 6,
+            "control_index": 5,
+            "project_name": "The Crest",
+            "division_name": "MEP Division",
+            "sub_division_name": "Electrical",
+            "activity_name": "GI Box Fixing",
+            "sub_activity_name": "Conduit Termination"
+        },
+        {
+            "defect_type": "Cold Joint in Slab",
+            "defect_threshold": 30,
+            "sporadic_threshold": 1,
+            "chronic_threshold": 8,
+            "severity_index": 9,
+            "control_index": 7,
+            "project_name": "The Crest",
+            "division_name": "Structural Division",
+            "sub_division_name": "Concrete & Formwork",
+            "activity_name": "Framing",
+            "sub_activity_name": "Post-Tension Tendon Profiling"
+        },
+        # Sobha Hartland II
+        {
+            "defect_type": "Pipe Joint Leakage",
+            "defect_threshold": 60,
+            "sporadic_threshold": 4,
+            "chronic_threshold": 20,
+            "severity_index": 7,
+            "control_index": 6,
+            "project_name": "Sobha Hartland II",
+            "division_name": "MEP Division",
+            "sub_division_name": "Plumbing",
+            "activity_name": "GI Box Fixing",
+            "sub_activity_name": "GI Box Fixing"
+        },
+        {
+            "defect_type": "Curtain Wall Air Leak",
+            "defect_threshold": 75,
+            "sporadic_threshold": 5,
+            "chronic_threshold": 18,
+            "severity_index": 6,
+            "control_index": 4,
+            "project_name": "Sobha Hartland II",
+            "division_name": "Structural Division",
+            "sub_division_name": "Waterproofing",
+            "activity_name": "Enclosure",
+            "sub_activity_name": "Curtain Wall Bracket Anchoring"
+        }
+    ]
+
+    for t in threshold_data:
+        t_obj = DefectThresholdMapping(
+            defect_type=t["defect_type"],
+            defect_threshold=t["defect_threshold"],
+            sporadic_threshold=t["sporadic_threshold"],
+            chronic_threshold=t["chronic_threshold"],
+            severity_index=t["severity_index"],
+            control_index=t["control_index"],
+            project_name=t.get("project_name", "Sobha Reserve"),
+            division_name=t.get("division_name"),
+            sub_division_name=t.get("sub_division_name"),
+            activity_name=t.get("activity_name"),
+            sub_activity_name=t.get("sub_activity_name")
+        )
+        db.add(t_obj)
+    db.commit()
+
 def seed():
     Base.metadata.create_all(bind=engine)
+
+    # Ensure new columns exist on defect_threshold_mappings
+    try:
+        with engine.connect() as conn:
+            for col in ["project_name", "division_name", "sub_division_name", "activity_name", "sub_activity_name"]:
+                try:
+                    conn.execute(text(f"ALTER TABLE defect_threshold_mappings ADD COLUMN IF NOT EXISTS {col} VARCHAR(255);"))
+                    conn.commit()
+                except Exception:
+                    pass
+    except Exception as e:
+        print(f"Migration note: {e}")
+
     db = SessionLocal()
 
     # Check if data already exists
     if db.query(Project).count() > 0:
-        print("Database already seeded. Skipping...")
-        db.close()
-        return
+        # Check if threshold mappings need migration to include project mappings
+        try:
+            mapped_count = db.query(DefectThresholdMapping).filter(DefectThresholdMapping.project_name.isnot(None)).count()
+            if mapped_count == 0:
+                print("Updating defect threshold mappings with project/activity hierarchy associations...")
+                db.query(DefectThresholdMapping).delete()
+                db.commit()
+                seed_threshold_mappings(db)
+            else:
+                print("Database already seeded with full schema. Skipping...")
+            db.close()
+            return
+        except Exception as e:
+            print(f"Threshold check note: {e}")
+            db.close()
+            return
 
     print("Seeding database with Sobha Quality Management baseline dataset...")
 
@@ -121,28 +369,7 @@ def seed():
         db.commit()
 
     # 4. Defect Threshold Sensitivity Mappings
-    threshold_data = [
-        {"defect_type": "UCM Leak", "defect_threshold": 60, "sporadic_threshold": 5, "chronic_threshold": 20, "severity_index": 4, "control_index": 8},
-        {"defect_type": "Glass Bend", "defect_threshold": 70, "sporadic_threshold": 3, "chronic_threshold": 15, "severity_index": 6, "control_index": 3},
-        {"defect_type": "Wire not connected", "defect_threshold": 100, "sporadic_threshold": 5, "chronic_threshold": 10, "severity_index": 8, "control_index": 8},
-        {"defect_type": "FCD connection issue", "defect_threshold": 200, "sporadic_threshold": 5, "chronic_threshold": 5, "severity_index": 5, "control_index": 4},
-        {"defect_type": "Access not provided for FCU", "defect_threshold": 50, "sporadic_threshold": 8, "chronic_threshold": 55, "severity_index": 4, "control_index": 8},
-        {"defect_type": "Screw missing", "defect_threshold": 30, "sporadic_threshold": 2, "chronic_threshold": 32, "severity_index": 2, "control_index": 1},
-        {"defect_type": "Tile hollow sound", "defect_threshold": 80, "sporadic_threshold": 6, "chronic_threshold": 25, "severity_index": 5, "control_index": 7},
-        {"defect_type": "Paint peeling & blister", "defect_threshold": 90, "sporadic_threshold": 7, "chronic_threshold": 30, "severity_index": 3, "control_index": 6},
-    ]
-
-    for t in threshold_data:
-        t_obj = DefectThresholdMapping(
-            defect_type=t["defect_type"],
-            defect_threshold=t["defect_threshold"],
-            sporadic_threshold=t["sporadic_threshold"],
-            chronic_threshold=t["chronic_threshold"],
-            severity_index=t["severity_index"],
-            control_index=t["control_index"]
-        )
-        db.add(t_obj)
-    db.commit()
+    seed_threshold_mappings(db)
 
     # 5. Quality Audit Incident Records & Yearly Counts
     report_data = [

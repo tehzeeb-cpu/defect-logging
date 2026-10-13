@@ -17,7 +17,7 @@ export default function ThresholdMappingView({ filterOptions, showToast }) {
   
   // Filter bar states
   const [filters, setFilters] = useState({
-    project: 'Project',
+    project: 'Sobha Reserve',
     division: 'Division',
     subDivision: 'Sub-Division',
     activity: 'Activity',
@@ -34,18 +34,26 @@ export default function ThresholdMappingView({ filterOptions, showToast }) {
     sporadic_threshold: 5,
     chronic_threshold: 15,
     severity_index: 5,
-    control_index: 5
+    control_index: 5,
+    project_name: 'Sobha Reserve',
+    division_name: 'Finishing Division',
+    activity_name: 'Dry Area Floor'
   });
 
   const [editModal, setEditModal] = useState(null);
 
-  const fetchMappings = async () => {
+  const fetchMappings = async (activeFilters = filters) => {
     try {
       setLoading(true);
       const params = new URLSearchParams();
       if (search) params.append('search', search);
-      if (filters.severity && filters.severity !== 'Severity') params.append('severity', filters.severity);
-      if (filters.control && filters.control !== 'Control') params.append('control', filters.control);
+      if (activeFilters.project && activeFilters.project !== 'Project') params.append('project', activeFilters.project);
+      if (activeFilters.division && activeFilters.division !== 'Division') params.append('division', activeFilters.division);
+      if (activeFilters.subDivision && activeFilters.subDivision !== 'Sub-Division') params.append('sub_division', activeFilters.subDivision);
+      if (activeFilters.activity && activeFilters.activity !== 'Activity') params.append('activity', activeFilters.activity);
+      if (activeFilters.subActivity && activeFilters.subActivity !== 'Sub-Activity') params.append('sub_activity', activeFilters.subActivity);
+      if (activeFilters.severity && activeFilters.severity !== 'Severity') params.append('severity', activeFilters.severity);
+      if (activeFilters.control && activeFilters.control !== 'Control') params.append('control', activeFilters.control);
 
       const res = await fetch(`/api/threshold-mappings?${params.toString()}`);
       if (res.ok) {
@@ -64,9 +72,32 @@ export default function ThresholdMappingView({ filterOptions, showToast }) {
   }, [search]);
 
   const handleFilterSubmit = () => {
-    fetchMappings();
+    fetchMappings(filters);
     showToast('Filters applied');
   };
+
+  const handleResetFilters = () => {
+    const reset = {
+      project: 'Project',
+      division: 'Division',
+      subDivision: 'Sub-Division',
+      activity: 'Activity',
+      subActivity: 'Sub-Activity',
+      severity: 'Severity',
+      control: 'Control'
+    };
+    setFilters(reset);
+    fetchMappings(reset);
+    showToast('All filters cleared');
+  };
+
+  const isFiltered = filters.project !== 'Project' ||
+    filters.division !== 'Division' ||
+    filters.subDivision !== 'Sub-Division' ||
+    filters.activity !== 'Activity' ||
+    filters.subActivity !== 'Sub-Activity' ||
+    filters.severity !== 'Severity' ||
+    filters.control !== 'Control';
 
   const handleInputChange = (id, field, value) => {
     const numVal = parseInt(value, 10);
@@ -269,6 +300,16 @@ export default function ThresholdMappingView({ filterOptions, showToast }) {
         >
           Filter
         </button>
+        {isFiltered && (
+          <button 
+            type="button" 
+            className="btn-outline"
+            style={{ padding: '7px 16px', borderRadius: '8px', color: '#6B7280', fontSize: '13px', cursor: 'pointer', background: 'transparent', border: '1px solid #E5E7EB' }}
+            onClick={handleResetFilters}
+          >
+            Clear
+          </button>
+        )}
       </div>
 
       {/* Threshold Mapping Table */}
@@ -425,6 +466,29 @@ export default function ThresholdMappingView({ filterOptions, showToast }) {
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                 <div className="form-group">
+                  <label className="form-label">Project Scope</label>
+                  <select 
+                    className="form-input"
+                    value={newDefect.project_name}
+                    onChange={e => setNewDefect({...newDefect, project_name: e.target.value})}
+                  >
+                    {filterOptions.projects?.map(p => <option key={p} value={p}>{p}</option>)}
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Division Scope</label>
+                  <select 
+                    className="form-input"
+                    value={newDefect.division_name}
+                    onChange={e => setNewDefect({...newDefect, division_name: e.target.value})}
+                  >
+                    {filterOptions.divisions?.map(d => <option key={d} value={d}>{d}</option>)}
+                  </select>
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                <div className="form-group">
                   <label className="form-label">Defect Threshold</label>
                   <input 
                     type="number" 
@@ -512,6 +576,29 @@ export default function ThresholdMappingView({ filterOptions, showToast }) {
                   onChange={e => setEditModal({...editModal, defect_type: e.target.value})}
                   required
                 />
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                <div className="form-group">
+                  <label className="form-label">Project Scope</label>
+                  <select 
+                    className="form-input"
+                    value={editModal.project_name || 'Sobha Reserve'}
+                    onChange={e => setEditModal({...editModal, project_name: e.target.value})}
+                  >
+                    {filterOptions.projects?.map(p => <option key={p} value={p}>{p}</option>)}
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Division Scope</label>
+                  <select 
+                    className="form-input"
+                    value={editModal.division_name || 'Finishing Division'}
+                    onChange={e => setEditModal({...editModal, division_name: e.target.value})}
+                  >
+                    {filterOptions.divisions?.map(d => <option key={d} value={d}>{d}</option>)}
+                  </select>
+                </div>
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
